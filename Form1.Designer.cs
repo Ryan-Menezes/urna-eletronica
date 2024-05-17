@@ -37,7 +37,7 @@
             txt_4 = new TextBox();
             txt_1 = new TextBox();
             lbl_numero = new Label();
-            pictureBox1 = new PictureBox();
+            pb_img = new PictureBox();
             lbl_info = new Label();
             btn_corrige = new Button();
             btn_confirma = new Button();
@@ -56,7 +56,7 @@
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pb_img).BeginInit();
             SuspendLayout();
             // 
             // splitContainer1
@@ -75,7 +75,7 @@
             splitContainer1.Panel1.Controls.Add(txt_4);
             splitContainer1.Panel1.Controls.Add(txt_1);
             splitContainer1.Panel1.Controls.Add(lbl_numero);
-            splitContainer1.Panel1.Controls.Add(pictureBox1);
+            splitContainer1.Panel1.Controls.Add(pb_img);
             splitContainer1.Panel1.Controls.Add(lbl_info);
             // 
             // splitContainer1.Panel2
@@ -184,13 +184,15 @@
             lbl_numero.TabIndex = 2;
             lbl_numero.Text = "Número:";
             // 
-            // pictureBox1
+            // pb_img
             // 
-            pictureBox1.Location = new Point(380, 36);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(175, 206);
-            pictureBox1.TabIndex = 1;
-            pictureBox1.TabStop = false;
+            pb_img.BorderStyle = BorderStyle.FixedSingle;
+            pb_img.Location = new Point(380, 36);
+            pb_img.Name = "pb_img";
+            pb_img.Size = new Size(175, 206);
+            pb_img.SizeMode = PictureBoxSizeMode.StretchImage;
+            pb_img.TabIndex = 1;
+            pb_img.TabStop = false;
             // 
             // lbl_info
             // 
@@ -437,7 +439,7 @@
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pb_img).EndInit();
             ResumeLayout(false);
         }
 
@@ -459,7 +461,7 @@
         private Button btn_0;
         private TextBox txt_1;
         private Label lbl_numero;
-        private PictureBox pictureBox1;
+        private PictureBox pb_img;
         private Label lbl_info;
         private Label lbl_nome;
         private Label lbl_partido;

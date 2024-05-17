@@ -4,7 +4,11 @@ namespace UrnaEletronica
     {
         private List<TextBox> inputs = new List<TextBox>();
         private List<Step> steps = new List<Step>();
-        private List<Candidate> candidates = new List<Candidate>();
+
+        private Dictionary<int, Candidate> candidates = new Dictionary<int, Candidate>();
+        private Dictionary<Position, int> nullVotes = new Dictionary<Position, int>();
+        private Dictionary<Position, int> whiteVotes = new Dictionary<Position, int>();
+
         private int indexStep = 0;
         private int indexDigit = 0;
 
@@ -16,10 +20,13 @@ namespace UrnaEletronica
 
         private void startCandidates()
         {
-            candidates.Add(new Candidate(4444, "Nikolas Ferreira", "PL", Position.DF));
+            candidates.Add(6666, new Candidate(6666, "Naldo", "PF", Properties.Resources.naldo, Position.DF));
 
-            candidates.Add(new Candidate(22, "Bolsonaro", "PL", Position.PR));
-            candidates.Add(new Candidate(13, "Lula", "PT", Position.PR));
+            candidates.Add(77777, new Candidate(77777, "Sonic", "SO", Properties.Resources.sonic, Position.DE));
+
+            candidates.Add(333, new Candidate(333, "Mario", "MA", Properties.Resources.mario, Position.SE));
+
+            candidates.Add(55, new Candidate(55, "Benio", "BN", Properties.Resources.benio, Position.PR));
         }
 
         private void startInputs()
@@ -29,6 +36,21 @@ namespace UrnaEletronica
             inputs.Add(txt_3);
             inputs.Add(txt_4);
             inputs.Add(txt_5);
+        }
+
+        private void startVotes()
+        {
+            nullVotes.Add(Position.DF, 0);
+            nullVotes.Add(Position.DE, 0);
+            nullVotes.Add(Position.SE, 0);
+            nullVotes.Add(Position.GO, 0);
+            nullVotes.Add(Position.PR, 0);
+
+            whiteVotes.Add(Position.DF, 0);
+            whiteVotes.Add(Position.DE, 0);
+            whiteVotes.Add(Position.SE, 0);
+            whiteVotes.Add(Position.GO, 0);
+            whiteVotes.Add(Position.PR, 0);
         }
 
         private void startSteps()
@@ -45,10 +67,9 @@ namespace UrnaEletronica
             startCandidates();
             startSteps();
             startInputs();
+            startVotes();
 
-            Step step = getCurrentStep();
-
-            showAndHideDigitsAndResetTitle(step);
+            showAndHideDigitsAndResetTitle();
         }
 
         private Step getCurrentStep()
@@ -56,17 +77,55 @@ namespace UrnaEletronica
             return steps[indexStep];
         }
 
-        private void goNextStep()
+        private void confirmVoteAndGoToNextStep()
+        {
+            if (hasEmptySomeDigits()) return;
+
+            addVote();
+            goToNextStep();
+        }
+
+        private void goToNextStep()
         {
             indexStep++;
 
-            Step step = getCurrentStep();
+            if (indexStep >= steps.Count) indexStep = 0;
 
-            showAndHideDigitsAndResetTitle(step);
+            showAndHideDigitsAndResetTitle();
         }
 
-        public void showAndHideDigitsAndResetTitle(Step step)
+        private void addVote()
         {
+            Step step = getCurrentStep();
+            Candidate? candidate = getCandidate();
+
+            if (candidate == null)
+            {
+                addNullVote();
+                return;
+            }
+
+            candidate.addVote();
+        }
+
+        private void addNullVote()
+        {
+            Step step = getCurrentStep();
+
+            nullVotes[step.position]++;
+        }
+
+        private void addWhiteVote()
+        {
+            Step step = getCurrentStep();
+
+            whiteVotes[step.position]++;
+        }
+
+        public void showAndHideDigitsAndResetTitle()
+        {
+            Step step = getCurrentStep();
+
             for (int i = 0; i < inputs.Count; i++)
             {
                 inputs[i].Visible = true;
@@ -78,17 +137,43 @@ namespace UrnaEletronica
             }
 
             lbl_info.Text = step.title;
-            lbl_nome.Text = "Nome: ";
-            lbl_partido.Text = "Partido: ";
+            lbl_nome.Text = "";
+            lbl_partido.Text = "";
+            pb_img.Image = null;
+            pb_img.Visible = false;
 
             resetDigits();
+        }
+
+        public int getDigitsFrom(Step step)
+        {
+            string digits = "";
+
+            for (int i = 0; i < step.digits; i++)
+            {
+                digits += inputs[i].Text;
+            }
+
+            return Int32.Parse(digits);
+        }
+
+        public bool hasEmptySomeDigits()
+        {
+            Step step = getCurrentStep();
+
+            for (int i = 0; i < step.digits; i++)
+            {
+                if (inputs[i].Text == "") return true;
+            }
+
+            return false;
         }
 
         private void resetDigits()
         {
             indexDigit = 0;
 
-            foreach(TextBox input in inputs)
+            foreach (TextBox input in inputs)
             {
                 input.Text = "";
             }
@@ -96,19 +181,54 @@ namespace UrnaEletronica
 
         private void setDigit(int digit)
         {
-            Step step = getCurrentStep();
-
-            if (indexDigit == step.digits - 1)
-            {
-                lbl_nome.Text = "Teste";
-            }
-
             if (indexDigit < 0 || indexDigit >= steps.Count) return;
 
             TextBox input = inputs[indexDigit];
 
             input.Text = digit.ToString();
+
+            verifySelectedCandidate();
+
             indexDigit++;
+        }
+
+        private void verifySelectedCandidate()
+        {
+            Step step = getCurrentStep();
+
+            if (indexDigit != step.digits - 1) return;
+
+            Candidate? candidate = getCandidate();
+
+            if (candidate == null)
+            {
+                lbl_nome.Text = "Nulo";
+                lbl_partido.Text = "";
+                pb_img.Image = null;
+                pb_img.Visible = false;
+                return;
+            }
+
+            lbl_nome.Text = "Nome: " + candidate.name;
+            lbl_partido.Text = "Partido: " + candidate.party;
+            pb_img.Image = candidate.image;
+            pb_img.Visible = true;
+        }
+
+        private Candidate? getCandidate()
+        {
+            Step step = getCurrentStep();
+
+            if (indexDigit != step.digits - 1) return null;
+
+            int digits = getDigitsFrom(step);
+
+            if (!candidates.ContainsKey(digits) || candidates[digits].position != step.position)
+            {
+                return null;
+            }
+
+            return candidates[digits];
         }
 
         private void btn_1_Click(object sender, EventArgs e)
@@ -163,17 +283,19 @@ namespace UrnaEletronica
 
         private void btn_branco_Click(object sender, EventArgs e)
         {
-
+            addWhiteVote();
+            goToNextStep();
         }
 
         private void btn_corrige_Click(object sender, EventArgs e)
         {
+            showAndHideDigitsAndResetTitle();
             resetDigits();
         }
 
         private void btn_confirma_Click(object sender, EventArgs e)
         {
-            goNextStep();
+            confirmVoteAndGoToNextStep();
         }
     }
 }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Hi9PmIjcdIgYovMVniax2QSgwG1OcyagQutiM8IPj+IGURhpJgoLDyjmvsmmDVzZI9jXUkZTBxn3AYOCCouGCg==",
+  "dgSpecHash": "njhI9P5TluDNHw8qdPyvf85nqYqrjlYk0qSjfdA/gQCx/yKdKK+9tzHSPY1pIsN2cKJiK/DBbezjaRTkSHfHog==",
   "success": true,
-  "projectFilePath": "C:\\Users\\lab-vp\\Downloads\\UrnaEletronica\\UrnaEletronica.csproj",
+  "projectFilePath": "C:\\laragon\\www\\urna-eletronica\\UrnaEletronica.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
